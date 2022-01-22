@@ -5,10 +5,12 @@ use std::error::Error;
 use std::fmt::Display;
 use std::str;
 use std::fmt::{Result as FmtResult, Formatter, Debug};
+use super::{QueryString};
 
-pub struct Request<'buff> {
-    path: &'buff str,
-    query_string: Option<&'buff str>,
+#[derive(Debug)]
+pub struct Request<'buf> {
+    path: &'buf str,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
 
@@ -36,7 +38,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
 
         let mut query_string = None;
         if let Some(i) = path.find('?') {
-            query_string=Some(&path[i+1..]);
+            query_string=Some(QueryString::from(&path[i+1..]));
             path = &path[..i];
         }
 
